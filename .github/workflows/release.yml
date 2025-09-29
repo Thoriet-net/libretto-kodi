@@ -1,4 +1,4 @@
-name: Build & Publish Kodi Repository
+name: "Build & Publish Kodi Repository"
 
 on:
   push:

@@ -1,0 +1,18 @@
+<addon id="repository.libretto"
+       name="Libretto Repository"
+       version="1.0.0"
+       provider-name="Thoriet">
+  <requires>
+    <import addon="xbmc.addon" version="20.0.0"/>
+  </requires>
+  <extension point="xbmc.addon.repository" name="Libretto Repository">
+    <info compressed="false">https://thoriet-net.github.io/libretto-repo/addons.xml</info>
+    <checksum>https://thoriet-net.github.io/libretto-repo/addons.xml.md5</checksum>
+    <datadir zip="true">https://thoriet-net.github.io/libretto-repo/</datadir>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Official Libretto repository</summary>
+    <description lang="en_GB">Installs and updates Libretto add-ons.</description>
+    <platform>all</platform>
+  </extension>
+</addon>

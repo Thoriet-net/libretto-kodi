@@ -1,0 +1,19 @@
+msgid ""
+msgstr ""
+"Language: cs_CZ\n"
+
+msgctxt "#30000"
+msgid "Libretto nastavení"
+msgstr "Libretto nastavení"
+
+msgctxt "#30001"
+msgid "Otevřít nastavení pro připojení k MariaDB a exportovat advancedsettings.xml?"
+msgstr "Otevřít nastavení pro připojení k MariaDB a exportovat advancedsettings.xml?"
+
+msgctxt "#30003"
+msgid "advancedsettings.xml uloženo."
+msgstr "advancedsettings.xml uloženo."
+
+msgctxt "#30004"
+msgid "Export selhal"
+msgstr "Export selhal"

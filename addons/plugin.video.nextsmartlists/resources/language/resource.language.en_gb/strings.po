@@ -1,0 +1,11 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: NextSmart\n"
+"Language: en_GB\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# dummy entry to avoid empty file warning
+msgctxt "#32000"
+msgid "NextSmart"
+msgstr "NextSmart"

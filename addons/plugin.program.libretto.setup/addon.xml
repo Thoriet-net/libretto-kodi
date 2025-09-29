@@ -1,0 +1,20 @@
+<addon id="plugin.program.libretto.setup"
+       name="Libretto Setup"
+       version="1.0.0"
+       provider-name="Hanzman">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0"/>
+  </requires>
+
+  <!-- Spustit jako service při startu Kodi -->
+  <extension point="xbmc.service" library="service.py" start="startup" />
+
+  <!-- Umožní tlačítko Configure (Nastavení) v GUI -->
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_gb">Wizard to write advancedsettings.xml for MariaDB</summary>
+    <summary lang="cs_cz">Průvodce pro zápis advancedsettings.xml pro MariaDB</summary>
+    <description lang="en_gb">Prompts for DB host/user and exports advancedsettings.xml</description>
+    <description lang="cs_cz">Zeptá se na DB host/uživatele a vyexportuje advancedsettings.xml</description>
+    <platform>all</platform>
+  </extension>
+</addon>

@@ -1,0 +1,19 @@
+<settings>
+  <category label="Database">
+    <setting id="db_host" type="text" label="Host/IP" default="" />
+    <setting id="db_port" type="number" label="Port" default="3306" />
+    <setting id="db_user" type="text" label="Username" default="" />
+    <setting id="db_pass" type="text" label="Password" option="hidden" default="" />
+    <setting id="videos_base" type="text" label="Videos DB base name" default="MyVideos" />
+    <setting id="music_base"  type="text" label="Music DB base name"  default="MyMusic" />
+  </category>
+
+  <category label="Import options">
+    <setting id="import_watched" type="bool" label="Import watched state" default="true" />
+    <setting id="import_resume"  type="bool" label="Import resume point"  default="true" />
+  </category>
+
+  <!-- interní příznaky -->
+  <setting id="first_run_done" type="bool" label="(internal) first run done" default="false" visible="false" />
+  <setting id="export_done"    type="bool" label="(internal) export done"    default="false" visible="false" />
+</settings>

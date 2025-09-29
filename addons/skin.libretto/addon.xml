@@ -1,0 +1,28 @@
+<addon id="skin.libretto"
+       name="Libretto"
+       version="0.0.1"
+       provider-name="Thoriet">
+  <requires>
+    <!-- Omega (v21) -->
+    <import addon="xbmc.gui" version="5.17.0"/>
+  </requires>
+
+  <extension point="xbmc.gui.skin"
+             defaultresolution="1080i"
+             defaultthemename="Textures.xbt"
+             debug="false"/>
+
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <summary lang="en_gb">Libretto skin (early scaffold)</summary>
+    <summary lang="cs_cz">Libretto skin (základní kostra)</summary>
+    <description lang="en_gb">A minimal skin scaffold to start building Libretto.</description>
+    <description lang="cs_cz">Minimální kostra skinu pro začátek vývoje Libretto.</description>
+    <license>MIT</license>
+    <source>https://github.com/Thoriet-net/libretto-kodi</source>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>

@@ -1,0 +1,8 @@
+<colors>
+  <color name="Primary">FF1E1E2A</color>
+  <color name="Accent">FF00D1FF</color>
+  <color name="Text">FFFFFFFF</color>
+  <color name="SubText">CCFFFFFF</color>
+  <color name="Dim">80FFFFFF</color>
+  <color name="BG">FF0D0D14</color>
+</colors>

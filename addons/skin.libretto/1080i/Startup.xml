@@ -1,0 +1,15 @@
+<window>
+  <defaultcontrol>2</defaultcontrol>
+  <controls>
+    <control type="group">
+      <visible>Window.IsActive(startup)</visible>
+      <control type="label">
+        <left>100</left><top>500</top>
+        <width>1720</width><height>80</height>
+        <label>Starting Libretto...</label>
+        <font>Large</font>
+        <align>center</align>
+      </control>
+    </control>
+  </controls>
+</window>

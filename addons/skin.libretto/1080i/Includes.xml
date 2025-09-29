@@ -1,0 +1,14 @@
+<includes>
+  <include name="Libretto.Background">
+    <control type="group">
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <texture colordiffuse="$VAR[BGColor]">white.png</texture>
+      </control>
+    </control>
+  </include>
+
+  <variable name="BGColor">
+    <value condition="true">FF0D0D14</value>
+  </variable>
+</includes>

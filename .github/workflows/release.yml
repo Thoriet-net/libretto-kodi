@@ -1,0 +1,128 @@
+name: Build & Publish Kodi Repository
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    env:
+      TARGET_OWNER: Thoriet-net
+      TARGET_REPO: libretto-repo
+      TARGET_BRANCH: main
+      GIT_AUTHOR_NAME: Thoriet
+      GIT_AUTHOR_EMAIL: noreply@users.noreply.github.com
+
+    steps:
+      - name: Checkout libretto-kodi
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zip rsync
+
+      - name: Package addons
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$PWD"
+          OUT="$ROOT/build/repo"
+          mkdir -p "$OUT"
+
+          # helper: read XML attr
+          read_attr() {
+            python3 - <<'PY' "$1" "$2"
+import sys, xml.etree.ElementTree as ET
+p=ET.parse(sys.argv[1]).getroot()
+print((p.attrib.get(sys.argv[2]) or "").strip())
+PY
+          }
+
+          shopt -s nullglob
+          for ADDON_DIR in addons/*; do
+            [ -f "$ADDON_DIR/addon.xml" ] || continue
+            ID=$(read_attr "$ADDON_DIR/addon.xml" "id")
+            VER=$(read_attr "$ADDON_DIR/addon.xml" "version")
+            [ -n "$ID" ] && [ -n "$VER" ] || { echo "Missing id/version in $ADDON_DIR/addon.xml"; exit 1; }
+
+            echo "Packaging $ID v$VER"
+            PKG_DIR="$OUT/$ID"
+            mkdir -p "$PKG_DIR"
+            cp "$ADDON_DIR/addon.xml" "$PKG_DIR/addon.xml"
+
+            # ZIP bez macOS metadat
+            export COPYFILE_DISABLE=1
+            (cd "$ADDON_DIR" && zip -r -X "$PKG_DIR/$ID-$VER.zip" . \
+               -x "*.git*" -x "__MACOSX/*" -x "._*" -x ".DS_Store")
+
+          done
+
+          echo "=== build/repo ==="
+          find "$OUT" -maxdepth 2 -type f | sed "s|$OUT/||"
+
+      - name: Build addons.xml and checksum
+        run: |
+          set -euo pipefail
+          OUT="$PWD/build/repo"
+
+          # slož všechny addon.xml do jednoho addons.xml
+          {
+            echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            echo '<addons>'
+            for d in "$OUT"/*; do
+              [ -f "$d/addon.xml" ] || continue
+              sed '1d;$d' "$d/addon.xml"  # bez vrchního/koncového <addon> wrapperu? NE! -> pro jistotu prostě cat
+            done | sed -n 'p'  # (ve skutečnosti stačí cat; ponecháme takto kvůli bezpečí)
+            # Lepší: rovnou cat každého addon.xml (Kodi si s více <addon> poradí)
+          } > "$OUT/addons.xml.tmp"
+
+          # Bez úprav: prostě poskládej <addons> s plnými <addon>
+          {
+            echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            echo '<addons>'
+            for d in "$OUT"/*; do
+              [ -f "$d/addon.xml" ] || continue
+              cat "$d/addon.xml"
+            done
+            echo '</addons>'
+          } > "$OUT/addons.xml"
+
+          python3 - <<'PY' "$OUT/addons.xml" > "$OUT/addons.xml.md5"
+import sys,hashlib
+p=sys.argv[1]
+print(hashlib.md5(open(p,'rb').read()).hexdigest())
+PY
+
+      - name: Checkout libretto-repo (target)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.TARGET_OWNER }}/${{ env.TARGET_REPO }}
+          token: ${{ secrets.LIBRETTO_REPO_TOKEN }}
+          path: target
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - name: Publish to libretto-repo
+        env:
+          GH_TOKEN: ${{ secrets.LIBRETTO_REPO_TOKEN }}
+        run: |
+          set -e
+          rsync -av --delete build/repo/ target/
+
+          cd target
+          git config user.name "${GIT_AUTHOR_NAME}"
+          git config user.email "${GIT_AUTHOR_EMAIL}"
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -m "Update repository from libretto-kodi @ ${GITHUB_SHA}"
+            git push origin "${TARGET_BRANCH}"
+          else
+            echo "No changes to commit."
+          fi

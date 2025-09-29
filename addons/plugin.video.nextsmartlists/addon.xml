@@ -1,0 +1,24 @@
+<?xml version="1.5.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.nextsmartlists"
+       name="NextSmart Lists"
+       version="1.5.5"
+       provider-name="Thoriet">
+
+
+    
+    <extension point="xbmc.python.pluginsource" library="main.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <summary lang="en_GB">Dynamic 'Next Up' + In-Progress episodes per show (Kodi 20+)</summary>
+        <summary lang="cs_CZ">Dynamické seznamy „Další na řadě“ + rozkoukané epizody pro každý seriál (Kodi 20+)</summary>
+        <description lang="en_GB">Creates dynamic lists (by profile) that show either the in-progress episode or the next unplayed episode per started TV show. Add any profile path as a widget (plugin://plugin.video.nextsmartlists/?action=browse&amp;profile=&lt;key&gt;). Supports skipping specials and multiple lists.</description>
+        <description lang="cs_CZ">Vytváří dynamické seznamy (podle profilu), které zobrazují buď rozkoukanou epizodu, nebo další nepřehranou epizodu každého seriálu, který jste již začali sledovat. Každý profil lze přidat jako widget (plugin://plugin.video.nextsmartlists/?action=browse&amp;profile=&lt;key&gt;). Podporuje přeskočení speciálů a více seznamů.</description>
+        <assets>
+            <icon>resources/icon.png</icon>
+        </assets>
+        <platform>all</platform>
+        <license>MIT</license>
+        <source>https://example.invalid/nextsmart</source>
+    </extension>
+</addon>

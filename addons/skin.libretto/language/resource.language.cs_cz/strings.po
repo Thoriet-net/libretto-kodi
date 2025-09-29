@@ -1,0 +1,14 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: skin.libretto 0.0.1\n"
+"Language: cs_CZ\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgctxt "#31000"
+msgid "Libretto"
+msgstr "Libretto"
+
+msgctxt "#31001"
+msgid "Domů"
+msgstr "Domů"

@@ -22,7 +22,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
       - name: Install build deps
         run: |
@@ -37,11 +37,10 @@ jobs:
           OUT="$ROOT/build/repo"
           mkdir -p "$OUT"
 
-          # helper: read XML attr
           read_attr() {
-            python3 - <<'PY' "$1" "$2"
+            python3 - "$1" "$2" <<'PY'
 import sys, xml.etree.ElementTree as ET
-p=ET.parse(sys.argv[1]).getroot()
+p = ET.parse(sys.argv[1]).getroot()
 print((p.attrib.get(sys.argv[2]) or "").strip())
 PY
           }
@@ -49,42 +48,32 @@ PY
           shopt -s nullglob
           for ADDON_DIR in addons/*; do
             [ -f "$ADDON_DIR/addon.xml" ] || continue
-            ID=$(read_attr "$ADDON_DIR/addon.xml" "id")
-            VER=$(read_attr "$ADDON_DIR/addon.xml" "version")
-            [ -n "$ID" ] && [ -n "$VER" ] || { echo "Missing id/version in $ADDON_DIR/addon.xml"; exit 1; }
+            ID=$(read_attr "$ADDON_DIR/addon.xml" id)
+            VER=$(read_attr "$ADDON_DIR/addon.xml" version)
+            if [ -z "$ID" ] || [ -z "$VER" ]; then
+              echo "Missing id/version in $ADDON_DIR/addon.xml"
+              exit 1
+            fi
 
             echo "Packaging $ID v$VER"
             PKG_DIR="$OUT/$ID"
             mkdir -p "$PKG_DIR"
             cp "$ADDON_DIR/addon.xml" "$PKG_DIR/addon.xml"
 
-            # ZIP bez macOS metadat
             export COPYFILE_DISABLE=1
             (cd "$ADDON_DIR" && zip -r -X "$PKG_DIR/$ID-$VER.zip" . \
-               -x "*.git*" -x "__MACOSX/*" -x "._*" -x ".DS_Store")
-
+              -x "*.git*" -x "__MACOSX/*" -x "._*" -x ".DS_Store")
           done
 
           echo "=== build/repo ==="
           find "$OUT" -maxdepth 2 -type f | sed "s|$OUT/||"
 
       - name: Build addons.xml and checksum
+        shell: bash
         run: |
           set -euo pipefail
           OUT="$PWD/build/repo"
 
-          # slož všechny addon.xml do jednoho addons.xml
-          {
-            echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-            echo '<addons>'
-            for d in "$OUT"/*; do
-              [ -f "$d/addon.xml" ] || continue
-              sed '1d;$d' "$d/addon.xml"  # bez vrchního/koncového <addon> wrapperu? NE! -> pro jistotu prostě cat
-            done | sed -n 'p'  # (ve skutečnosti stačí cat; ponecháme takto kvůli bezpečí)
-            # Lepší: rovnou cat každého addon.xml (Kodi si s více <addon> poradí)
-          } > "$OUT/addons.xml.tmp"
-
-          # Bez úprav: prostě poskládej <addons> s plnými <addon>
           {
             echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             echo '<addons>'
@@ -95,10 +84,10 @@ PY
             echo '</addons>'
           } > "$OUT/addons.xml"
 
-          python3 - <<'PY' "$OUT/addons.xml" > "$OUT/addons.xml.md5"
-import sys,hashlib
-p=sys.argv[1]
-print(hashlib.md5(open(p,'rb').read()).hexdigest())
+          python3 - "$OUT/addons.xml" <<'PY' > "$OUT/addons.xml.md5"
+import sys, hashlib
+p = sys.argv[1]
+print(hashlib.md5(open(p, "rb").read()).hexdigest())
 PY
 
       - name: Checkout libretto-repo (target)
@@ -113,7 +102,7 @@ PY
         env:
           GH_TOKEN: ${{ secrets.LIBRETTO_REPO_TOKEN }}
         run: |
-          set -e
+          set -euo pipefail
           rsync -av --delete build/repo/ target/
 
           cd target

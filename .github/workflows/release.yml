@@ -72,28 +72,7 @@ jobs:
         run: |
           set -euo pipefail
           cd build/repo
-
-          python3 - <<'PY'
-import glob, hashlib, xml.etree.ElementTree as ET
-root = ET.Element('addons')
-for addon_xml in sorted(glob.glob('*/addon.xml')):
-    tree = ET.parse(addon_xml)
-    root.append(tree.getroot())
-tree = ET.ElementTree(root)
-try:
-    ET.indent(tree, space="  ", level=0)  # Python 3.9+
-except Exception:
-    pass
-with open('addons.xml', 'wb') as f:
-    f.write(b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n')
-    tree.write(f, encoding='utf-8', xml_declaration=False)
-m = hashlib.md5()
-with open('addons.xml', 'rb') as f:
-    m.update(f.read())
-with open('addons.xml.md5', 'w', encoding='utf-8') as f:
-    f.write(m.hexdigest())
-PY
-
+          python3 -c 'import glob,hashlib,xml.etree.ElementTree as ET; root=ET.Element("addons"); [root.append(ET.parse(p).getroot()) for p in sorted(glob.glob("*/addon.xml"))]; xml=b"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"+ET.tostring(root, encoding="utf-8"); open("addons.xml","wb").write(xml); open("addons.xml.md5","w").write(hashlib.md5(open("addons.xml","rb").read()).hexdigest())'
           echo "=== build/repo ==="
           ls -l .
           echo

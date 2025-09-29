@@ -95,7 +95,12 @@ jobs:
           GH_TOKEN: ${{ secrets.LIBRETTO_REPO_TOKEN }}
         run: |
           set -euo pipefail
-          rsync -av --delete build/repo/ target/
+          rsync -av --delete \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='CNAME' \
+            --exclude='index.html' \
+            build/repo/ target/
 
           cd target
           git config user.name "${GIT_AUTHOR_NAME}"

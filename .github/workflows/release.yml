@@ -68,19 +68,44 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          OUT="$PWD/build/repo"
+          cd build/repo
 
-          {
-            echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-            echo '<addons>'
-            for d in "$OUT"/*; do
-              [ -f "$d/addon.xml" ] || continue
-              cat "$d/addon.xml"
-            done
-            echo '</addons>'
-          } > "$OUT/addons.xml"
+          # Build a clean addons.xml by parsing each addon's addon.xml (avoids duplicate XML declarations)
+          python3 - <<'PY'
+import os, glob, xml.etree.ElementTree as ET, hashlib
 
-          python3 -c 'import sys,hashlib;print(hashlib.md5(open(sys.argv[1],"rb").read()).hexdigest())' "$OUT/addons.xml" > "$OUT/addons.xml.md5"
+root = ET.Element('addons')
+for addon_xml in sorted(glob.glob('*/addon.xml')):
+    try:
+        tree = ET.parse(addon_xml)
+        addon = tree.getroot()
+        root.append(addon)
+    except Exception as e:
+        raise SystemExit(f"Failed to parse {addon_xml}: {e}")
+
+tree = ET.ElementTree(root)
+# pretty print (Python 3.9+)
+try:
+    ET.indent(tree, space="  ", level=0)  # type: ignore[attr-defined]
+except Exception:
+    pass
+
+with open('addons.xml', 'wb') as f:
+    f.write(b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n')
+    tree.write(f, encoding='utf-8', xml_declaration=False)
+
+# md5 checksum
+md5 = hashlib.md5()
+with open('addons.xml','rb') as f:
+    md5.update(f.read())
+with open('addons.xml.md5','w', encoding='utf-8') as f:
+    f.write(md5.hexdigest())
+PY
+
+          echo "=== build/repo ==="
+          ls -l .
+          echo
+          head -n 5 addons.xml
 
       - name: Checkout libretto-repo (target)
         uses: actions/checkout@v4

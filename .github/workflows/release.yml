@@ -38,11 +38,7 @@ jobs:
           mkdir -p "$OUT"
 
           read_attr() {
-            python3 - "$1" "$2" <<'PY'
-import sys, xml.etree.ElementTree as ET
-p = ET.parse(sys.argv[1]).getroot()
-print((p.attrib.get(sys.argv[2]) or "").strip())
-PY
+            python3 -c 'import sys,xml.etree.ElementTree as ET; r=ET.parse(sys.argv[1]).getroot(); print((r.attrib.get(sys.argv[2]) or "").strip())' "$1" "$2"
           }
 
           shopt -s nullglob

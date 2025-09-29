@@ -80,11 +80,7 @@ jobs:
             echo '</addons>'
           } > "$OUT/addons.xml"
 
-          python3 - "$OUT/addons.xml" <<'PY' > "$OUT/addons.xml.md5"
-import sys, hashlib
-p = sys.argv[1]
-print(hashlib.md5(open(p, "rb").read()).hexdigest())
-PY
+          python3 -c 'import sys,hashlib;print(hashlib.md5(open(sys.argv[1],"rb").read()).hexdigest())' "$OUT/addons.xml" > "$OUT/addons.xml.md5"
 
       - name: Checkout libretto-repo (target)
         uses: actions/checkout@v4
